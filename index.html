@@ -59,10 +59,10 @@
 
         .progress-container {
             position: relative;
-            height: 4px;
+            height: 4px; /* Etwas dünner für eleganteren Look */
             background: var(--track-gray);
             border-radius: 10px;
-            margin: 30px 20px 20px 20px;
+            margin: 30px 20px 20px 20px; /* Platz für Dots */
             z-index: 0;
         }
 
@@ -80,20 +80,20 @@
 
         .progress-steps {
             position: absolute;
-            top: -14px;
+            top: -14px; /* Dots vertikal zentrieren zur Linie */
             left: 0;
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0;
+            padding: 0; 
             z-index: 2;
-            pointer-events: none;
+            pointer-events: none; /* Klicks gehen durch */
         }
 
         .step-dot {
             width: 32px;
             height: 32px;
-            background: var(--card-bg);
+            background: var(--card-bg); /* Weißer Hintergrund default */
             border-radius: 50%;
             border: 2px solid var(--track-gray);
             color: var(--text-muted);
@@ -106,6 +106,7 @@
             position: relative;
         }
 
+        /* Status: In Arbeit (Aktiv) */
         .step-dot.active {
             border-color: var(--primary);
             color: var(--primary);
@@ -115,6 +116,7 @@
             z-index: 3;
         }
 
+        /* Status: Erledigt */
         .step-dot.done {
             background: var(--success);
             border-color: var(--success);
@@ -166,6 +168,14 @@
             font-size: 0.9rem;
         }
 
+        select {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-family: inherit;
+        }
+
         .input-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -173,7 +183,7 @@
         }
 
         .input-group { display: flex; flex-direction: column; }
-
+        
         label {
             font-weight: 600;
             font-size: 0.9rem;
@@ -219,10 +229,11 @@
             position: relative;
             transition: transform 0.2s;
         }
-
+        
+        /* Animation wenn Step completed */
         .step-card.step-completed {
             border-left-color: var(--success) !important;
-            opacity: 0.7;
+            opacity: 0.7; /* Leicht ausgrauen für Fokus auf nächsten Schritt */
         }
         .step-card.step-completed::after {
             content: '✓';
@@ -264,7 +275,7 @@
             border-radius: 6px;
             overflow: hidden;
             background: var(--code-bg);
-            min-height: 54px;
+            min-height: 54px; 
         }
 
         .code-display {
@@ -329,7 +340,7 @@
             justify-content: space-between;
             align-items: center;
         }
-
+        
         .btn-check-done {
             background: white;
             border: 1px solid var(--primary);
@@ -358,6 +369,17 @@
             font-size: 0.85rem;
             color: var(--text-muted);
             font-family: monospace;
+        }
+
+        .ps-warning {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--warning-bg);
+            color: var(--warning-text);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid #fcd34d;
         }
 
         @media (max-width: 600px) {
@@ -396,10 +418,12 @@
         </div>
 
         <div class="settings-bar">
-            <strong>Terminal-Hinweis:</strong>
-            <span style="color: var(--text-muted); font-size: 0.9rem;">
-                Für Copy-Paste nutze <b>Git Bash</b> (nutzt <b>&&</b> und stoppt bei Fehlern).
-            </span>
+            <label for="terminalType" style="margin:0; color:var(--text-main);">Dein Terminal:</label>
+            <select id="terminalType">
+                <option value="bash">Git Bash / CMD / Mac (nutzt &&)</option>
+                <option value="powershell" selected>Windows PowerShell (nutzt ;)</option>
+            </select>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">(Ändert das Trennzeichen automatisch)</span>
         </div>
 
         <div class="input-grid">
@@ -417,10 +441,13 @@
     <div class="step-card" id="card-1">
         <h3 class="step-title"><span class="step-number">1</span> Start: Arbeitsstand vorbereiten</h3>
         <p style="font-size: 0.9rem; margin-bottom: 10px; color: var(--text-muted);">Wechselt zu Main, zieht Updates und erstellt neuen Branch.</p>
-
+        
         <div class="command-wrapper">
             <div class="code-display" id="code-step1">Lade Befehle...</div>
             <button class="copy-btn" data-target="code-step1" data-step-trigger="1">KOPIEREN</button>
+        </div>
+        <div class="ps-warning" id="ps-warning-1">
+            <strong>Hinweis:</strong> PowerShell stoppt bei Fehlern (z.B. Merge Conflicts) nicht automatisch, da es ";" nutzt. Bitte Konsole prüfen.
         </div>
     </div>
 
@@ -434,7 +461,7 @@
             <li><input type="checkbox"> Keine Layout-Brüche</li>
             <li><input type="checkbox"> DevTools Konsole (keine Errors)</li>
         </ul>
-
+        
         <div class="step-2-actions">
             <button class="btn-check-done" id="btnStep2Done" onclick="markStep2Done()">
                 <span>&#10003;</span> Checkliste erledigt
@@ -460,7 +487,7 @@
 
     <div class="step-card" id="card-4">
         <h3 class="step-title"><span class="step-number">4</span> Push nach GitHub</h3>
-
+        
         <div class="command-wrapper">
             <div class="code-display" id="code-step4">Lade Befehle...</div>
             <button class="copy-btn" data-target="code-step4" data-step-trigger="4">KOPIEREN</button>
@@ -481,18 +508,20 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-
+        
         // Referenzen UI
         const branchInput = document.getElementById('branchInput');
         const commitInput = document.getElementById('commitInput');
+        const terminalSelect = document.getElementById('terminalType');
         const checklistContainer = document.getElementById('checklist-container');
+        const psWarning = document.getElementById('ps-warning-1');
         const resetBtn = document.getElementById('resetBtn');
         const btnStep2Done = document.getElementById('btnStep2Done');
 
         // Tracker Referenzen
         const progressBar = document.getElementById('progressBar');
         const stepDots = document.querySelectorAll('.step-dot');
-
+        
         // Code Container
         const codeStep1 = document.getElementById('code-step1');
         const codeStep3 = document.getElementById('code-step3');
@@ -505,70 +534,94 @@
         const DEFAULT_COMMIT = 'UI: Beschreibung der Änderung';
 
         // --- TRACKER LOGIK (V 5.0) ---
-        let stepsDone = 0;
-        const TOTAL_INTERVALS = 4;
+        // stepsDone = Anzahl der abgeschlossenen Schritte. 
+        // 0 = Start (Step 1 ist aktiv)
+        // 1 = Step 1 fertig (Step 2 aktiv) ...
+        let stepsDone = 0; 
+        const TOTAL_INTERVALS = 4; // Zwischen 5 Punkten gibt es 4 Abstände
 
         function updateTracker(completedStepIndex) {
+            // Wir nehmen an: Wenn Button für Schritt X geklickt wird, ist Schritt X fertig.
+            // Der User ist dann im Workflow bei Schritt X+1.
+            
+            // Nur aktualisieren, wenn wir vorwärts gehen
             if (completedStepIndex > stepsDone) {
                 stepsDone = completedStepIndex;
             }
 
+            // 1. Progress Bar Update
+            // Wenn Schritt 1 fertig ist, füllen wir 1/4 des Balkens (zu Schritt 2)
+            // Wenn Schritt 4 fertig ist, füllen wir 4/4 des Balkens (zu Schritt 5)
+            // Limitierung auf 100%
             const percentage = Math.min((stepsDone / TOTAL_INTERVALS) * 100, 100);
             progressBar.style.width = percentage + '%';
 
+            // 2. Dots Update (Status: Done, Active, Pending)
+            // Active Step ist immer der nächste nach den erledigten (stepsDone + 1)
             const activeStep = stepsDone + 1;
 
             stepDots.forEach(dot => {
                 const dotNumber = parseInt(dot.getAttribute('data-step'));
-
+                
+                // Reset classes
                 dot.classList.remove('active', 'done');
 
                 if (dotNumber < activeStep) {
+                    // Vergangene Schritte -> Done (Grün)
                     dot.classList.add('done');
-                    dot.innerHTML = '&#10003;';
+                    dot.innerHTML = '&#10003;'; // Checkmark
                 } else if (dotNumber === activeStep && dotNumber <= 5) {
+                    // Aktueller Schritt -> Active (Blau/Groß)
                     dot.classList.add('active');
-                    dot.textContent = dotNumber;
+                    dot.textContent = dotNumber; // Nummer anzeigen
                 } else {
+                    // Zukunft -> Normal
                     dot.textContent = dotNumber;
                 }
             });
 
-            for (let i = 1; i <= 5; i++) {
-                const card = document.getElementById('card-' + i);
-                if (card) {
+            // 3. Karten visuell markieren
+            for(let i=1; i<=5; i++) {
+                const card = document.getElementById('card-'+i);
+                if(card) {
                     if (i < activeStep) card.classList.add('step-completed');
                     else card.classList.remove('step-completed');
                 }
             }
         }
 
+        // Tracker Reset (Auf Startzustand: Step 1 active)
         window.resetTrackerOnly = function() {
             stepsDone = 0;
             progressBar.style.width = '0%';
-
+            
+            // UI Reset
             stepDots.forEach(dot => {
                 const dotNumber = parseInt(dot.getAttribute('data-step'));
                 dot.classList.remove('active', 'done');
                 dot.textContent = dotNumber;
-                if (dotNumber === 1) dot.classList.add('active');
+                if(dotNumber === 1) dot.classList.add('active'); // Step 1 Start
             });
 
+            // Karten Reset
             document.querySelectorAll('.step-card').forEach(c => c.classList.remove('step-completed'));
-
-            if (btnStep2Done) {
+            
+            // Button 2 Reset
+            if(btnStep2Done) {
                 btnStep2Done.classList.remove('active');
                 btnStep2Done.innerHTML = '<span>&#10003;</span> Checkliste erledigt';
             }
         };
-
+        
+        // Button Step 2 Logik
         window.markStep2Done = function() {
             const btn = document.getElementById('btnStep2Done');
             btn.classList.add('active');
             btn.innerHTML = '<span>&#10003;</span> Erledigt!';
-            updateTracker(2);
+            updateTracker(2); // Schritt 2 erledigt -> gehe zu 3
         };
 
+        // --- Helper: HTML Generator ---
         function generateCodeHTML(parts, separator) {
             let html = '';
             parts.forEach((part) => {
@@ -581,28 +634,125 @@
             return html;
         }
 
+        // --- Haupt-Update Funktion (Commands) ---
         function updateCommands() {
             try {
                 const branchVal = branchInput.value.trim() || DEFAULT_BRANCH;
                 const commitVal = commitInput.value || DEFAULT_COMMIT;
+                const isPowerShell = terminalSelect.value === 'powershell';
+                
+                const sep = isPowerShell ? ';' : '&&';
+                
+                if(psWarning) psWarning.style.display = isPowerShell ? 'block' : 'none';
 
-                // FIX: Immer Git Bash / && (fail-safe)
-                const sep = '&&';
-
-                if (codeStep1) {
+                // Commands Step 1
+                if(codeStep1) {
                     codeStep1.innerHTML = generateCodeHTML([
                         { type: 'cmd', text: 'git checkout main' },
                         { type: 'sep', text: sep },
                         { type: 'cmd', text: 'git pull' },
                         { type: 'sep', text: sep },
-                        { type: 'cmd', text: 'git checkout -b ' },
+                        { type: 'cmd', text: 'git checkout -b ' }, 
                         { type: 'arg', text: branchVal }
                     ], sep);
                 }
 
-                if (codeStep3) {
+                // Commands Step 3 (db.js included)
+                if(codeStep3) {
                     codeStep3.innerHTML = generateCodeHTML([
                         { type: 'cmd', text: 'git add index.html db.js' },
                         { type: 'sep', text: sep },
                         { type: 'cmd', text: 'git commit -m "' },
                         { type: 'arg', text: commitVal },
+                        { type: 'cmd', text: '"' }
+                    ], sep);
+                }
+
+                // Commands Step 4
+                if(codeStep4) {
+                    codeStep4.innerHTML = generateCodeHTML([
+                        { type: 'cmd', text: 'git push -u origin ' },
+                        { type: 'arg', text: branchVal }
+                    ], sep);
+                }
+
+                // Commands Step 5
+                if(codeStep5) {
+                    codeStep5.innerHTML = generateCodeHTML([
+                        { type: 'cmd', text: 'git checkout main' },
+                        { type: 'sep', text: sep },
+                        { type: 'cmd', text: 'git pull' },
+                        { type: 'sep', text: sep },
+                        { type: 'cmd', text: 'git branch -D ' },
+                        { type: 'arg', text: branchVal }
+                    ], sep);
+                }
+
+            } catch (e) {
+                console.error("Fehler im Skript:", e);
+                if(codeStep1) codeStep1.innerText = "Fehler beim Laden";
+            }
+        }
+
+        // --- Global Reset Funktion ---
+        function resetAll() {
+            if (confirm('Neues Ticket starten? Alle Eingaben und der Tracker werden zurückgesetzt.')) {
+                branchInput.value = DEFAULT_BRANCH;
+                commitInput.value = DEFAULT_COMMIT;
+                
+                const checkboxes = checklistContainer.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+
+                updateCommands();
+                resetTrackerOnly(); 
+            }
+        }
+
+        // --- Copy Funktion mit Tracker Trigger ---
+        function handleCopy(btn) {
+            const targetId = btn.getAttribute('data-target');
+            const stepTrigger = parseInt(btn.getAttribute('data-step-trigger'));
+            const container = document.getElementById(targetId);
+            
+            if(!container) return;
+
+            let textToCopy = container.textContent.replace(/\s+/g, ' ').trim(); 
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "KOPIERT!";
+                btn.classList.add('copied');
+                
+                // TRACKER UPDATE: Wenn Schritt X kopiert, ist X erledigt.
+                if(stepTrigger) {
+                    updateTracker(stepTrigger);
+                }
+
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                alert('Fehler beim Kopieren: ' + err);
+            });
+        }
+
+        // --- Event Listener ---
+        if(branchInput) branchInput.addEventListener('input', updateCommands);
+        if(commitInput) commitInput.addEventListener('input', updateCommands);
+        if(terminalSelect) terminalSelect.addEventListener('change', updateCommands);
+        if(resetBtn) resetBtn.addEventListener('click', resetAll);
+        
+        copyButtons.forEach(btn => {
+            btn.addEventListener('click', () => handleCopy(btn));
+        });
+
+        // --- Init ---
+        terminalSelect.value = 'powershell'; 
+        updateCommands();
+        resetTrackerOnly(); // Setzt Startzustand (Step 1 active)
+    });
+</script>
+
+</body>
+</html>
